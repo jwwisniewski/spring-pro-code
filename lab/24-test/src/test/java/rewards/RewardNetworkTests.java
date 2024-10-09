@@ -86,7 +86,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * - Run the test again.
  */
 @SpringJUnitConfig()
-@ActiveProfiles({"jdbc", "local"})
+@ActiveProfiles({"jdbc", "jndi"})
 public class RewardNetworkTests {
 
 	@Configuration
