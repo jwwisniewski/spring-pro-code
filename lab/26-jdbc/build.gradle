@@ -3,5 +3,5 @@ dependencies {
 }
 
 test {
-    exclude '**/JdbcRewardRepositoryTests.class'
+//    exclude '**/JdbcRewardRepositoryTests.class'
 }
