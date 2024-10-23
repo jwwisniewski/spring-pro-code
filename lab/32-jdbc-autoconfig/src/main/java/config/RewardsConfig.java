@@ -2,9 +2,9 @@ package config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import rewards.RewardNetwork;
 import rewards.internal.RewardNetworkImpl;
 import rewards.internal.account.AccountRepository;
@@ -21,12 +21,12 @@ public class RewardsConfig {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	DataSource dataSource;
+//	DataSource dataSource;
 
-	@Autowired  // This @Autowired annotation is optional here
-	public RewardsConfig(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+//	@Autowired  // This @Autowired annotation is optional here
+//	public RewardsConfig(DataSource dataSource) {
+//		this.dataSource = dataSource;
+//	}
 
     // TODO-10 (Optional) : Switch back to explicit `DataSource` configuration
     // (Instead of using auto-configured DataSource, we are going to configure
@@ -37,7 +37,7 @@ public class RewardsConfig {
     // - Uncomment @Bean method below
     // - Remove the code above that performs DataSource injection
     // - Fix compile errors in this code
-    /*
+
     @Bean
     public DataSource dataSource() {
         logger.debug("Creating the datasource bean explicitly");
@@ -48,7 +48,7 @@ public class RewardsConfig {
                         .addScript("classpath:data.sql")
                         .build();
     }
-    */
+
 
     @Bean
     public RewardNetwork rewardNetwork() {
@@ -60,19 +60,19 @@ public class RewardsConfig {
 
     @Bean
     public AccountRepository accountRepository() {
-        JdbcAccountRepository repository = new JdbcAccountRepository(dataSource);
+        JdbcAccountRepository repository = new JdbcAccountRepository(this.dataSource());
         return repository;
     }
 
     @Bean
     public RestaurantRepository restaurantRepository() {
-        JdbcRestaurantRepository repository = new JdbcRestaurantRepository(dataSource);
+        JdbcRestaurantRepository repository = new JdbcRestaurantRepository(this.dataSource());
         return repository;
     }
 
     @Bean
     public RewardRepository rewardRepository() {
-        JdbcRewardRepository repository = new JdbcRewardRepository(dataSource);
+        JdbcRewardRepository repository = new JdbcRewardRepository(this.dataSource());
         return repository;
     }
 
