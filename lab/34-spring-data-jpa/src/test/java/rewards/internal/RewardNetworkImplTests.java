@@ -1,19 +1,17 @@
 package rewards.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import common.money.MonetaryAmount;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rewards.AccountContribution;
 import rewards.Dining;
 import rewards.RewardConfirmation;
 import rewards.internal.account.AccountRepository;
 import rewards.internal.restaurant.RestaurantRepository;
 import rewards.internal.reward.RewardRepository;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for the RewardNetworkImpl application logic. Configures the implementation with stub repositories
@@ -41,7 +39,6 @@ public class RewardNetworkImplTests {
 	}
 
 	@Test
-	@Disabled
 	public void testRewardForDining() {
 		// create a new dining of 100.00 charged to credit card '1234123412341234' by merchant '123457890' as test input
 		Dining dining = Dining.createDining("100.00", "1234123412341234", "1234567890");
