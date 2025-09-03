@@ -125,5 +125,24 @@ public class AccountClientTests {
 		});
 		assertEquals(HttpStatus.NOT_FOUND, httpClientErrorException.getStatusCode());
 	}
-	
+
+    @Test
+    public void addAccountTwice() {
+        // Use a unique number to avoid conflicts
+        String number = String.format("12345%4d", random.nextInt(10000));
+        Account account = new Account(number, "John Doe");
+        account.addBeneficiary("Jane Doe");
+
+        String url = BASE_URL + "/accounts";
+        URI newAccountLocation = restTemplate
+                .postForLocation(url, account); // Modify this line to use the restTemplate
+
+        HttpClientErrorException httpClientErrorException = assertThrows(HttpClientErrorException.class, () -> {
+
+            URI newAccountLocation2 = restTemplate
+                    .postForLocation(url, account); // Modify this line to use the restTemplate
+        });
+
+        assertEquals(HttpStatus.CONFLICT, httpClientErrorException.getStatusCode());
+    }
 }
