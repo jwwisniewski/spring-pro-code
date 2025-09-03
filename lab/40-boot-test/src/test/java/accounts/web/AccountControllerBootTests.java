@@ -10,11 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import rewards.internal.account.Account;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 // TODO-07: Replace @ExtendWith(SpringExtension.class) with the following annotation
@@ -116,4 +118,106 @@ public class AccountControllerBootTests {
     // - Run the test and observe a test failure
     // - Change it back to `@MockBean`
 
+    @Test
+    public void teatGetAllAccounts() throws Exception {
+        List<Account> allAccounts = new ArrayList<>();
+        allAccounts.add(new Account("1", "One"));
+        allAccounts.add(new Account("2", "Two"));
+        given(accountManager.getAllAccounts())
+                .willReturn(
+                        allAccounts
+                );
+
+        mockMvc
+                .perform(get("/accounts"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(asJsonString(allAccounts)))
+        ;
+
+        verify(accountManager).getAllAccounts();
+    }
+
+    @Test
+    public void testGetBeneficiaryNotFound() throws Exception {
+
+        Account account = new Account("1234567890", "John Doe");
+        account.setEntityId(1L);
+
+        given(accountManager.getAccount(1L))
+                .willReturn(account);
+
+        mockMvc
+                .perform(get("/accounts/1/beneficiaries/Fred"))
+                .andExpect(status().isNotFound())
+        ;
+        verify(accountManager).getAccount(1L);
+    }
+
+    @Test
+    public void testDeleteBeneficiaryNotFound() throws Exception {
+
+        Account account = new Account("1234567890", "John Doe");
+        account.setEntityId(1L);
+
+        given(accountManager.getAccount(1L))
+                .willReturn(account);
+
+        mockMvc
+                .perform(delete("/accounts/1/beneficiaries/Fred"))
+                .andExpect(status().isNotFound())
+        ;
+        verify(accountManager).getAccount(1L);
+    }
+
+    @Test
+    public void testGetBeneficiaryFound() throws Exception {
+
+        Account account = new Account("1234567890", "John Doe");
+        account.setEntityId(1L);
+        account.addBeneficiary("Fred");
+
+        given(accountManager.getAccount(1L))
+                .willReturn(account);
+
+        mockMvc
+                .perform(get("/accounts/1/beneficiaries/Fred"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("name").value("Fred"))
+        ;
+        verify(accountManager).getAccount(1L);
+    }
+
+    @Test
+    public void testDeleteBeneficiaryFound() throws Exception {
+
+        Account account = new Account("1234567890", "John Doe");
+        account.setEntityId(1L);
+        account.addBeneficiary("Fred");
+
+        given(accountManager.getAccount(1L))
+                .willReturn(account);
+
+        mockMvc
+                .perform(delete("/accounts/1/beneficiaries/Fred"))
+                .andExpect(status().isNoContent())
+        ;
+        verify(accountManager).getAccount(1L);
+    }
+
+    @Test
+    public void testAddBeneficiary() throws Exception {
+        Account account = new Account("1234567890", "John Doe");
+        account.setEntityId(1L);
+
+        given(accountManager.getAccount(1L))
+                .willReturn(account);
+
+        mockMvc
+                .perform(post("/accounts/1/beneficiaries/").contentType(MediaType.APPLICATION_JSON).content("Fred"))
+                .andExpect(status().isCreated())
+        ;
+        verify(accountManager).addBeneficiary(1L, "Fred");
+    }
 }
