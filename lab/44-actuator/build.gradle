@@ -1,14 +1,39 @@
 apply plugin: "org.springframework.boot"
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) // Use Java 17 instead of 24
+    }
+}
+
 dependencies {
     implementation project(':00-rewards-common')
     implementation project(':01-rewards-db')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // TO-DO-01: Note that the Actuator starter is already here for you.
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+springBoot {
+    buildInfo{
+        properties {
+            name = "actuator app"
+            additional = [
+                    javaVersion:     System.properties['java.version'],
+                    operatingSystem: "${System.properties['os.name']} (${System.properties['os.version']})",
+                    whass: "up"
+            ]
+        }
+    }
 }
 
 // TO-DO-07: Add BuildInfo task to the Spring Boot Gradle plugin
 
 // TO-DO-08: Add additional properties of name, javaVersion, operatingSystem
+
+
+// export JAVA_HOME=$(/usr/libexec/java_home -v 17) && export PATH=$JAVA_HOME/bin:$PATH
+// ./gradlew 44-actuator:clean 44-actuator:build && ./gradlew 44-actuator:bootRu

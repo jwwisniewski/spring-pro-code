@@ -2,6 +2,9 @@ package accounts.web;
 
 import accounts.AccountManager;
 import common.money.Percentage;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +35,9 @@ import java.util.List;
 public class AccountController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Counter counter;
 
-	private AccountManager accountManager;
+    private AccountManager accountManager;
 
 	// TODO-08: Add a Micrometer Counter
 	// - Inject a MeterRegistry through constructor injection
@@ -41,8 +45,10 @@ public class AccountController {
 	// - Create a Counter from the MeterRegistry: name the counter "account.fetch"
 	//   with a tag of "type"/"fromCode" key/value pair
 	@Autowired
-	public AccountController(AccountManager accountManager) {
+	public AccountController(AccountManager accountManager, MeterRegistry meterRegistry) {
 		this.accountManager = accountManager;
+        this.counter = meterRegistry.counter("account.fetch", "type", "fromCode");
+
 	}
 
 	/**
@@ -54,8 +60,10 @@ public class AccountController {
      * - Set a extra tag with "source"/"accountSummary" key/value pair
 	 */
 	@GetMapping(value = "/accounts")
+    @Timed(value="account.timer", extraTags = {"source", "accountSummary"})
 	public List<Account> accountSummary() {
-		return accountManager.getAllAccounts();
+        logger.debug("Logging message within accountSummary()");
+        return accountManager.getAllAccounts();
 	}
 
 	/**
@@ -71,7 +79,10 @@ public class AccountController {
      *  - Set extra tag with "source"/"accountDetails" key/value pair
 	 */
 	@GetMapping(value = "/accounts/{id}")
+    @Timed(value="account.timer", extraTags = {"source", "accountDetails"})
+    @Timed(value="accountId.timer", extraTags = {"source", "accountDetails"})
 	public Account accountDetails(@PathVariable int id) {
+        counter.increment();
 
 		return retrieveAccount(id);
 	}

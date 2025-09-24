@@ -46,7 +46,7 @@ subprojects {
         testImplementation "org.springframework.boot:spring-boot-starter-test"
     }
 
-    sourceCompatibility = '11'
+//    sourceCompatibility = '11'
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
